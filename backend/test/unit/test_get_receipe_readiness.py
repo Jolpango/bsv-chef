@@ -35,11 +35,36 @@ def test_complies_valid_readiness(mock_calculate):
 # add your test case implementation here
 @pytest.mark.unit
 @mock.patch("src.util.calculator.calculate_readiness", autospec=True)
-def test_low_readiness(mock_calculate):
-    mock_calculate.return_value = 0.05
+def test_low_threshold_readiness(mock_calculate):
+    mock_calculate.return_value = 0.09
     mock_dao = mock.MagicMock()
     with (mock.patch.object(ReceipeController, "load_receipes", new = load_receipes)):
         sut = ReceipeController(mock_dao)
         recipe = { "diets": ["vegan"], "ingredients": [] }
         readiness = sut.get_receipe_readiness(recipe, None, diet=Diet.VEGAN)
         assert readiness is None
+
+# add your test case implementation here
+@pytest.mark.unit
+@mock.patch("src.util.calculator.calculate_readiness", autospec=True)
+def test_exact_threshold_readiness(mock_calculate):
+    mock_calculate.return_value = 0.1
+    mock_dao = mock.MagicMock()
+    with (mock.patch.object(ReceipeController, "load_receipes", new = load_receipes)):
+        sut = ReceipeController(mock_dao)
+        recipe = { "diets": ["vegan"], "ingredients": [] }
+        readiness = sut.get_receipe_readiness(recipe, None, diet=Diet.VEGAN)
+        assert readiness is 0.1
+
+# add your test case implementation here
+@pytest.mark.unit
+@mock.patch("src.util.calculator.calculate_readiness", autospec=True)
+def test_above_threshold_readiness(mock_calculate):
+    mock_calculate.return_value = 0.11
+    mock_dao = mock.MagicMock()
+    with (mock.patch.object(ReceipeController, "load_receipes", new = load_receipes)):
+        sut = ReceipeController(mock_dao)
+        recipe = { "diets": ["vegan"], "ingredients": [] }
+        readiness = sut.get_receipe_readiness(recipe, None, diet=Diet.VEGAN)
+        assert readiness is 0.11
+
